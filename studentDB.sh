@@ -18,6 +18,13 @@ do
 		1)
 		       	echo -n "Enter file name: " # -n is also used for taking input on same line
 			read fname
+   			if [ -e fname ] #compares all existing files with fname
+			then 
+				echo "File already exists"
+			else
+				 >> $fname	#piping/writing out empty fname
+				echo "File created successfully"
+			fi	
 			;;
 
 		2)
