@@ -86,9 +86,62 @@ do
 
 
 		5)	
+  			echo -n "Enter file name: "
+			read fname
+			if [ -e $fname ]
+			then 
+				echo "Enter Roll No:  "
+				read roll
+				grep -w "$roll" $fname
+			       	flag=$?	
+				if [ $flag -eq 0 ]
+				then
+					echo -n "Enter New Roll no. & New Name: "
+					read nroll nname
+					grep -w "$nroll" $fname
+					flag=$?
+					if [ $flag -eq 0 ]
+					then
+						echo "Newly entered Roll no. already exists"
+					else 
+						grep -v "$roll" $fname >> temp	#excludes "word and outputs the rest"
+						rm $fname	#delete original file data
+						cp temp $fname	#why not cp $temp $fname	#copy data with specfied record deleted
+						rm temp		#remove variable+data
+
+						echo $nroll $nname >> $fname
+					fi
+				else
+					echo "Record not found"
+				fi
+			else
+				echo "File does Not exist!"
+			fi
 			;;
 
 		6)
+  			echo -n "Enter file name: "
+			read fname
+			if [ -eq $fname ]
+			then
+				echo -n "Enter Roll no. to delete: "
+				read roll
+				grep -w "$roll" $fname
+				flag=$?
+				if [ $flag -eq 0 ]
+				then
+					grep -v "$roll" $fname >> temp
+					rm $fname
+					ls
+					cp temp $fname
+					ls
+					rm temp
+				else
+					echo "Record Not found"
+				fi
+			else
+				"File does Not exist"
+			fi
 			;;
 
 		7)
