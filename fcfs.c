@@ -106,15 +106,28 @@ void fcfs_Algo(struct Process pTable[], int n) {
 			curr = pTable[i].ct;
 		}
 		else {
+			curr = pTable[i].at;
+			pTable[i].ct = curr + pTable[i].bt; 	
+			curr = pTable[i].ct;
+
+		/*	For preemptive	
 			curr = curr+1;
 			i = i - 1;
+		*/
 		}
 	}
-	
+
 	//show gantz chart
+	printf("Gantz Chart:\n");
 	for(int i=0; i<n; i++) {
-		printf("%d ", pTable[i].ct);
+		printf("\tP%d\t", pTable[i].pn);
 	}
+	printf("\n");
+	printf("%d\t", pTable[0].at);
+	for(int i=0; i<n; i++) {
+		printf("\t%d\t", pTable[i].ct);
+	}
+	printf("\n");	
 
 	//calculate turn-around time
 	float avgTT=0;
@@ -128,10 +141,18 @@ void fcfs_Algo(struct Process pTable[], int n) {
 	float avgWT=0;
 	for(int i=0; i<n; i++) {
 		pTable[i].wt = pTable[i].tt - pTable[i].bt; 
+		avgWT = avgWT + pTable[i].wt; 
 	}
 	avgWT = avgWT/n;
 
 	//show Output table	
+	for(int i=0; i<n; i++) {	//sort as per process No.
+	  	for(int j=i+1; j<n; j++) {
+			if(pTable[i].pn > pTable[j].pn) {
+				swap(pTable, i, j);
+			}
+		}
+	}
 	printf("\n");
 	show_opTable(pTable, n);
 	printf("\n");
