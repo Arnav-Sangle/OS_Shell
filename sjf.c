@@ -140,31 +140,40 @@ void sjf_algo(ProcessTable job1[], int n) {
 	int min=0;
 	
 	while(curr < last_at) {
-		for(int i=0; i<c+1; i++) {
+		for(int i=0; i<c+1; i++) {					//looping selected
+			printf("curr=%d, at=%d\n", curr, job1[i].at);
 			if(curr > job1[i].at) {
-				c++;
+				c++;						//arrived list no.
+				printf("curr=%d, c=%d\n", curr, c);
+				
+				printf("Pmin bt=%d Pi bt%d\n", job1[min].pn, job1[i].bt);
 				if(job1[min].bt >= job1[i].bt) {
 					//k = min;
-					min = i;
+					min = i;			//select min bt
 				}
-			}
+			}	
 		}
 		
-		for(int j=0; j<c+1; j++) {
-			if(job1[min].bt > 0) {
-				job1[j].bt = job1[j].bt - 1;
-				curr = curr + 1;
-				break;
-			}
-			else {
-				job1[j].ct = curr;
-			}		
+		//for(int j=0; j<c+1; j++) {}
+		if(job1[min].bt > 0) {
+			job1[min].bt = job1[min].bt - 1;
+			curr = curr + 1;
+			printf("P%d bt=%d ict%d\n", job1[min].pn, job1[min].bt, curr);
 		}
-		
+		else {
+			job1[min].ct = curr;
+		}		
 	}
 	
-	printf("curr = %d\n", curr);
-	//btSort(job1, n);
+	printf("\n");
+	
+	printf("lastAT=%d curr=%d\n", last_at, curr);
+	btSort(job1, n);
+	
+	printf("\n");
+	show_ipTable(job1, n);
+	printf("\n");
+	
 	for(int i=0; i<n; i++) {
 		if(curr >= job1[i].at) {	
 			job1[i].ct = curr + job1[i].bt; 	
@@ -224,4 +233,3 @@ void sjf_algo(ProcessTable job1[], int n) {
 	printf("Avg TT = %.2f\n", avgTT);
 	printf("Avg WT = %.2f\n", avgWT);
 }
-
