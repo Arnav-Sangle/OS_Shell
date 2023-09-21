@@ -87,6 +87,23 @@ void swap(ProcessTable job1[], int i, int j) {
 	temp = job1[i].bt;
 	job1[i].bt = job1[j].bt;
 	job1[j].bt = temp;
+
+	temp = job1[i].btc;
+	job1[i].btc = job1[j].btc;
+	job1[j].btc = temp;
+
+	temp = job1[i].ct;
+	job1[i].ct = job1[j].ct;
+	job1[j].ct = temp;
+
+	temp = job1[i].tt;
+	job1[i].tt = job1[j].tt;
+	job1[j].tt = temp;
+
+	temp = job1[i].wt;
+	job1[i].wt = job1[j].wt;
+	job1[j].wt = temp;
+
 }
 
 
@@ -117,89 +134,78 @@ void sjf_algo(ProcessTable job1[], int n) {
 	
 	atSort(job1, n);
 
-/*	
-	ProcessTable jobCpy[n];	
-	for(int i=0; i<n; i++) {
-		jobCpy[i].at = job1[i].at;
-		jobCpy[i].bt = job1[i].bt;
-	}
-*/
-
-	/*
-	printf("\n");
-	show_ipTable(job1, n);
-	printf("\n");
-	*/
-
 	//calculate completion time
 	int arrived[n];
 	int last_at = job1[n-1].at;
-	int curr = job1[0].at;
+	int start_at = job1[0].at;
+	int curr = start_at;
 	
-	int c=0; int k=0;
+	int c=1;	//selected process list count
 	int min=0;
-	
-	while(curr < last_at) {
-		for(int i=0; i<c+1; i++) {					//looping selected
-			printf("curr=%d, at=%d\n", curr, job1[i].at);
-			if(curr > job1[i].at) {
-				c++;						//arrived list no.
-				printf("curr=%d, c=%d\n", curr, c);
-				
-				printf("Pmin bt=%d Pi bt%d\n", job1[min].pn, job1[i].bt);
-				if(job1[min].bt >= job1[i].bt) {
-					//k = min;
-					min = i;			//select min bt
-				}
-			}	
+
+	//Preemptive calculation		
+	while(curr <= last_at) {
+		//select min
+		for(int i=0; i<c; i++) {
+			if(job1[min].bt >= job1[i].bt  && job1[i].bt != 0) {
+				min = i;
+			}
 		}
 		
-		//for(int j=0; j<c+1; j++) {}
-		if(job1[min].bt > 0) {
-			job1[min].bt = job1[min].bt - 1;
-			curr = curr + 1;
-			printf("P%d bt=%d ict%d\n", job1[min].pn, job1[min].bt, curr);
-		}
-		else {
+		//calc bt
+		job1[min].bt = job1[min].bt - 1;
+		curr = curr+1;
+		
+		if(job1[min].bt == 0) {
 			job1[min].ct = curr;
-		}		
+			//printf("P%d ct=%d\n", job1[min].pn, job1[min].ct);
+		}
+
+		c++;
 	}
+	//printf("\n");
+	//printf("lastAT=%d curr=%d\n", last_at, curr);
 	
-	printf("\n");
-	
-	printf("lastAT=%d curr=%d\n", last_at, curr);
+	//Sort as per BT
+	//printf("P%d ct=%d\n", job1[3].pn, job1[3].ct);
 	btSort(job1, n);
+	//printf("P%d ct=%d\n", job1[0].pn, job1[0].ct);
 	
 	printf("\n");
 	show_ipTable(job1, n);
 	printf("\n");
 	
+	//all process loaded, use Non-Preemptive
 	for(int i=0; i<n; i++) {
-		if(curr >= job1[i].at) {	
-			job1[i].ct = curr + job1[i].bt; 	
-			curr = job1[i].ct;
-		}
-		else {
-			curr = job1[i].at;
-			job1[i].ct = curr + job1[i].bt; 	
-			curr = job1[i].ct;
+		if(job1[i].bt > 0) {
+			if(curr >= job1[i].at) {		
+				job1[i].ct = curr + job1[i].bt; 	
+				//printf("P%d ct=%d\n", job1[i].pn, job1[i].ct);
+				curr = job1[i].ct;
+				//printf("P%d curr=%d\n", job1[i].pn, curr);
+			}
+			else {
+				curr = job1[i].at;
+				job1[i].ct = curr + job1[i].bt; 	
+				curr = job1[i].ct;
+			}
 		}
 
 	}
 
-/*
+
 	//show gantz chart
 	printf("Gantz Chart:\n");
 	for(int i=0; i<n; i++) {
 		printf("\tP%d\t", job1[i].pn);
 	}
 	printf("\n");
-	printf("%d\t", job1[0].at);
+	printf("%d\t", start_at);
 	for(int i=0; i<n; i++) {
 		printf("\t%d\t", job1[i].ct);
 	}
 	printf("\n");	
-*/
+
 
 	//calculate turn-around time
 	float avgTT=0;
@@ -209,6 +215,7 @@ void sjf_algo(ProcessTable job1[], int n) {
 	}
 	avgTT = avgTT/n;
 
+
 	//calculate waiting time
 	float avgWT=0;
 	for(int i=0; i<n; i++) {
@@ -216,6 +223,7 @@ void sjf_algo(ProcessTable job1[], int n) {
 		avgWT = avgWT + job1[i].wt; 
 	}
 	avgWT = avgWT/n;
+
 
 	//show Output table	
 	for(int i=0; i<n; i++) {	//sort as per process No.
@@ -228,6 +236,7 @@ void sjf_algo(ProcessTable job1[], int n) {
 	printf("\n");
 	show_opTable(job1, n);
 	printf("\n");
+
 
 	//result
 	printf("Avg TT = %.2f\n", avgTT);
